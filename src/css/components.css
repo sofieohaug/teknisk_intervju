@@ -1,0 +1,23 @@
+.text-information {
+  font-size: 12px;
+}
+
+/* InputFields.css */
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputFields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+}

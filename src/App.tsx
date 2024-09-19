@@ -1,21 +1,19 @@
 import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
+import "./css/App.css";
+import { TravelInput } from "./components/travel_input";
+import { Header } from "./components/header";
+import { InputFields } from "./components/input_fields";
+import { ButtonAdd } from "./components/button_add";
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>rask endring</p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <Header />
+        <TravelInput />
+        <InputFields />
+        <ButtonAdd headline={"Legg til ny reise"} />
+        <ButtonAdd headline={"Vis resultat"} />
       </header>
     </div>
   );
