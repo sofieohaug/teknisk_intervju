@@ -4,13 +4,16 @@ import { InputFields } from "./input_fields";
 import { Results } from "./results";
 
 interface Props {
-  headline: string;
+  headline?: string;
+  //onClick: () => void;
 }
 
+//Gå bort fra universal knapp
 export const ButtonAdd: React.FC<Props> = ({ headline }) => {
   const [showTravelInput, setShowTravelInput] = useState<boolean>(false);
   const [showResults, setShowResults] = useState<boolean>(false);
 
+  //TODO: få at det legges til flere felt
   const handleClick = () => {
     if (headline === "Legg til ny reise") {
       setShowTravelInput((prev) => !prev);
@@ -26,7 +29,7 @@ export const ButtonAdd: React.FC<Props> = ({ headline }) => {
       <Button variant="outlined" onClick={handleClick}>
         {headline}
       </Button>
-      {showResults && <Results />}
+      {showResults && <Results calculation={0} />}
     </div>
   );
 };

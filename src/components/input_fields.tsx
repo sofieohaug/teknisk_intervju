@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { TextField } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -7,6 +7,29 @@ import Radio from "@mui/material/Radio";
 import "../css/components.css";
 
 export const InputFields: React.FC = () => {
+  const [inputKm, setInputKm] = useState<number | "">("");
+  const [inputTransports, setInputTransports] = useState<number | "">("");
+  const [inputExpenses, setInputExpenses] = useState<number | "">("");
+
+  const handleChangeKm = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setInputKm(value === "" ? "" : Number(value));
+    console.log(value);
+  };
+
+  const handleChangeTransports = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = event.target.value;
+    setInputTransports(value === "" ? "" : Number(value));
+    console.log(value);
+  };
+
+  const handleChangeExpenses = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setInputExpenses(value === "" ? "" : Number(value));
+    console.log(value);
+  };
   return (
     <>
       <p className="text-information"> Fyll inn:</p>
@@ -43,18 +66,24 @@ export const InputFields: React.FC = () => {
             label="Antall km"
             variant="outlined"
             type="number"
+            value={inputKm === "" ? "" : inputKm}
+            onChange={handleChangeKm}
           />
           <TextField
             id="outlined-basic2"
             label="Antall forekomster"
             variant="outlined"
             type="number"
+            value={inputTransports === "" ? "" : inputTransports}
+            onChange={handleChangeTransports}
           />
           <TextField
             id="outlined-basic3"
             label="Totale utgifter"
             variant="outlined"
             type="number"
+            value={inputExpenses === "" ? "" : inputExpenses}
+            onChange={handleChangeExpenses}
           />
         </div>
       </div>
