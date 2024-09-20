@@ -1,35 +1,24 @@
-import React, { useState } from "react";
+import React, { ChangeEvent } from "react";
 import { TextField } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
-import "../css/components.css";
 
-export const InputFields: React.FC = () => {
-  const [inputKm, setInputKm] = useState<number | "">("");
-  const [inputTransports, setInputTransports] = useState<number | "">("");
-  const [inputExpenses, setInputExpenses] = useState<number | "">("");
-
-  const handleChangeKm = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setInputKm(value === "" ? "" : Number(value));
-    console.log(value);
+interface InputFieldsProps {
+  inputValues: {
+    km: number | "";
+    antall: number | "";
+    utgifterBomFergeEtc: number | "";
+    [key: string]: number | ""; // Index signature to match InputValues
   };
+  handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
+}
 
-  const handleChangeTransports = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = event.target.value;
-    setInputTransports(value === "" ? "" : Number(value));
-    console.log(value);
-  };
-
-  const handleChangeExpenses = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setInputExpenses(value === "" ? "" : Number(value));
-    console.log(value);
-  };
+export const InputFields: React.FC<InputFieldsProps> = ({
+  inputValues,
+  handleInputChange,
+}) => {
   return (
     <>
       <p className="text-information"> Fyll inn:</p>
@@ -62,28 +51,28 @@ export const InputFields: React.FC = () => {
           }}
         >
           <TextField
-            id="outlined-basic1"
+            name="km"
             label="Antall km"
             variant="outlined"
             type="number"
-            value={inputKm === "" ? "" : inputKm}
-            onChange={handleChangeKm}
+            value={inputValues.km} // Bound to state
+            onChange={handleInputChange} // Change handler
           />
           <TextField
-            id="outlined-basic2"
+            name="antall"
             label="Antall forekomster"
             variant="outlined"
             type="number"
-            value={inputTransports === "" ? "" : inputTransports}
-            onChange={handleChangeTransports}
+            value={inputValues.antall} // Bound to state
+            onChange={handleInputChange} // Change handler
           />
           <TextField
-            id="outlined-basic3"
+            name="utgifterBomFergeEtc"
             label="Totale utgifter"
             variant="outlined"
             type="number"
-            value={inputExpenses === "" ? "" : inputExpenses}
-            onChange={handleChangeExpenses}
+            value={inputValues.utgifterBomFergeEtc} // Bound to state
+            onChange={handleInputChange} // Change handler
           />
         </div>
       </div>

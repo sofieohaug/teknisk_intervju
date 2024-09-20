@@ -1,35 +1,63 @@
 import { Button } from "@mui/material";
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 import { InputFields } from "./input_fields";
 import { Results } from "./results";
 
-interface Props {
-  headline?: string;
-  //onClick: () => void;
+// Defining the structure for inputValues with an index signature
+interface InputValues {
+  km: number | "";
+  antall: number | "";
+  utgifterBomFergeEtc: number | "";
+  [key: string]: number | ""; // Index signature to allow dynamic keys
 }
 
-//Gå bort fra universal knapp
+interface Props {
+  headline?: string;
+}
+
 export const ButtonAdd: React.FC<Props> = ({ headline }) => {
+  const [inputValues, setInputValues] = useState<InputValues>({
+    km: "",
+    antall: "",
+    utgifterBomFergeEtc: "",
+  });
+
   const [showTravelInput, setShowTravelInput] = useState<boolean>(false);
   const [showResults, setShowResults] = useState<boolean>(false);
 
-  //TODO: få at det legges til flere felt
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    console.log(`Input name: ${name}, value: ${value}`);
+
+    setInputValues({
+      ...inputValues,
+      [name]: Number(value),
+    });
+
+    console.log("Updated inputValues: ", inputValues);
+  };
+
   const handleClick = () => {
     if (headline === "Legg til ny reise") {
       setShowTravelInput((prev) => !prev);
     } else if (headline === "Vis resultat") {
-      setShowResults((prev) => !prev);
+      setShowResults(true);
     }
   };
 
   return (
     <div>
-      {" "}
-      {showTravelInput && <InputFields />}
+      {showTravelInput && (
+        <InputFields
+          inputValues={inputValues}
+          handleInputChange={handleInputChange}
+        />
+      )}
       <Button variant="outlined" onClick={handleClick}>
         {headline}
       </Button>
-      {showResults && <Results calculation={0} />}
+      {showResults && <Results inputValues={inputValues} />}{" "}
     </div>
   );
 };

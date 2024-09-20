@@ -1,16 +1,25 @@
 import "../css/header.css";
 import { ButtonAdd } from "./button_add";
 
-interface Props {
-  calculation: number;
+interface InputValues {
+  km: number | "";
+  antall: number | "";
+  utgifterBomFergeEtc: number | "";
 }
 
-export const Results: React.FC<Props> = ({ calculation }) => {
+interface ResultsProps {
+  inputValues: InputValues;
+}
+
+export const Results: React.FC<ResultsProps> = ({ inputValues }) => {
   return (
-    <>
-      <h6>Reisefradraget ditt blir følgende: {calculation} kr</h6>
+    <div>
+      <h2>Resultat:</h2>
+      <p>Antall km: {inputValues.km}</p>
+      <p>Antall forekomster: {inputValues.antall}</p>
+      <p>Totale utgifter: {inputValues.utgifterBomFergeEtc}</p>
       <ButtonAdd headline={"Korriger verdier"} />
       <ButtonAdd headline={"Nullstill skjema"} />
-    </>
+    </div>
   );
 };
