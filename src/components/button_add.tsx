@@ -3,27 +3,30 @@ import { useState, ChangeEvent } from "react";
 import { InputFields } from "./input_fields";
 import { Results } from "./results";
 
-// Defining the structure for inputValues with an index signature
 interface InputValues {
-  km: number | "";
-  antall: number | "";
-  utgifterBomFergeEtc: number | "";
-  [key: string]: number | ""; // Index signature to allow dynamic keys
+  km: number;
+  antall: number;
+  utgifterBomFergeEtc: number;
+  [key: string]: number; //Kan være jeg kun trenger denne
 }
 
 interface Props {
-  headline?: string;
+  headline?:
+    | "Legg til ny reise"
+    | "Vis resultat"
+    | "Korriger verdier"
+    | "Nullstill skjema"; // S: Endret fra string til union av ulike strings (sånn at den er type safe når man lager komponenten)
 }
 
 export const ButtonAdd: React.FC<Props> = ({ headline }) => {
   const [inputValues, setInputValues] = useState<InputValues>({
-    km: "",
-    antall: "",
-    utgifterBomFergeEtc: "",
+    km: 0,
+    antall: 0,
+    utgifterBomFergeEtc: 0,
   });
 
-  const [showTravelInput, setShowTravelInput] = useState<boolean>(false);
-  const [showResults, setShowResults] = useState<boolean>(false);
+  const [showTravelInput, setShowTravelInput] = useState<boolean>(false); // TODO: endre logikken annerledes, funker til en MVP per nå
+  const [showResults, setShowResults] = useState<boolean>(false); // TODO: samme her
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
