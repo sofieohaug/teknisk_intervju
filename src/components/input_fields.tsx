@@ -7,37 +7,80 @@ import Radio from "@mui/material/Radio";
 import { ButtonAdd } from "./button_add";
 import { Results } from "./results";
 
-interface InputValues {
+interface TravelEntry {
   km: number;
   antall: number;
+}
+
+interface InputValues {
+  arbeidsreiser: TravelEntry[];
+  besoeksreiser: TravelEntry[];
   utgifterBomFergeEtc: number;
-  [key: string]: number;
 }
 
 export const InputFields = () => {
   // TODO: sette limits på input feltene som oppgaven sier i A) + placeholders
   const [inputValues, setInputValues] = useState<InputValues>({
-    km: 0,
-    antall: 0,
+    arbeidsreiser: [],
+    besoeksreiser: [],
     utgifterBomFergeEtc: 0,
   });
 
+  const [currentEntry, setCurrentEntry] = useState<TravelEntry>({
+    km: 0,
+    antall: 0,
+  });
+
   const [showResults, setShowResults] = useState<boolean>(false);
+  const [travelType, setTravelType] = useState<string>("work");
+  //const [showResults, setShowResults] = useState<boolean>(false);
+  const [showButton, setShowButton] = useState(true);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    console.log(`Input name: ${name}, value: ${value}`);
-    setInputValues({
-      ...inputValues,
+    setCurrentEntry({
+      ...currentEntry,
       [name]: Number(value),
     });
-    console.log("Updated inputValues: ", inputValues);
+  };
+
+  const handleTravelTypeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setTravelType(event.target.value);
+  };
+  const handleUtgifterChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputValues({
+      ...inputValues,
+      utgifterBomFergeEtc: Number(event.target.value),
+    });
   };
 
   const handleClick = () => {
-    console.log("sjekk");
+    // Add the current travel entry to the appropriate category and update state
+    setInputValues((prevValues) => {
+      const updatedValues = {
+        ...prevValues,
+        utgifterBomFergeEtc: prevValues.utgifterBomFergeEtc, // Preserve the current utgifter
+      };
+
+      if (travelType === "work") {
+        updatedValues.arbeidsreiser = [
+          ...prevValues.arbeidsreiser,
+          currentEntry,
+        ];
+      } else if (travelType === "visit") {
+        updatedValues.besoeksreiser = [
+          ...prevValues.besoeksreiser,
+          currentEntry,
+        ];
+      }
+
+      console.log("Updated input values:", updatedValues);
+
+      return updatedValues;
+    });
+
     setShowResults(true);
-    return <Results inputValues={inputValues} />;
+    setShowButton(!showButton);
   };
 
   return (
@@ -55,6 +98,7 @@ export const InputFields = () => {
             aria-labelledby="demo-radio-buttons-group-label"
             defaultValue="work"
             name="radio-buttons-group"
+            onChange={handleTravelTypeChange}
             style={{ display: "flex", flexDirection: "column" }}
           >
             <FormControlLabel
@@ -82,7 +126,7 @@ export const InputFields = () => {
             label="Antall km"
             variant="outlined"
             type="number"
-            value={inputValues.km}
+            value={currentEntry.km}
             onChange={handleInputChange}
           />
           <TextField
@@ -90,7 +134,7 @@ export const InputFields = () => {
             label="Antall forekomster"
             variant="outlined"
             type="number"
-            value={inputValues.antall}
+            value={currentEntry.antall}
             onChange={handleInputChange}
           />
           <TextField
@@ -99,15 +143,17 @@ export const InputFields = () => {
             variant="outlined"
             type="number"
             value={inputValues.utgifterBomFergeEtc}
-            onChange={handleInputChange}
+            onChange={handleUtgifterChange}
           />
         </div>
       </div>
-      <ButtonAdd headline="Legg til ny reise" />
-      <Button variant="outlined" onClick={handleClick}>
-        Vis resultater
-      </Button>
-      {showResults && <Results inputValues={inputValues} />}{" "}
+      {/* <ButtonAdd headline="Legg til ny reise" /> */}
+      {showButton && (
+        <Button variant="outlined" onClick={handleClick}>
+          Vis resultater
+        </Button>
+      )}
+      {showResults && <Results />}{" "}
     </>
   );
 };
