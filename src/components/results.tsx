@@ -20,6 +20,10 @@ export const Results: React.FC<ResultsProps> = ({ inputValues }) => {
       <p>Antall km: {inputValues.km}</p>
       <p>Antall forekomster: {inputValues.antall}</p>
       <p>Totale utgifter: {inputValues.utgifterBomFergeEtc}</p>
+      <p>
+        Reisefradrag blir følgende:{" "}
+        {inputValues.km + inputValues.antall + inputValues.utgifterBomFergeEtc}
+      </p>
       <ButtonAdd headline={"Korriger verdier"} />
       <ButtonAdd headline={"Nullstill skjema"} />
     </div>

@@ -12,7 +12,7 @@ function App() {
         <Header />
         <TravelInput />
         <ButtonAdd headline="Legg til ny reise" />
-        <ButtonAdd headline="Vis resultat" />
+        {/* <ButtonAdd headline="Vis resultat" /> */}
       </header>
     </div>
   );

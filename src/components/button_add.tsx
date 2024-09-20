@@ -19,31 +19,14 @@ interface Props {
 }
 
 export const ButtonAdd: React.FC<Props> = ({ headline }) => {
-  const [inputValues, setInputValues] = useState<InputValues>({
-    km: 0,
-    antall: 0,
-    utgifterBomFergeEtc: 0,
-  });
-
   const [showTravelInput, setShowTravelInput] = useState<boolean>(false); // TODO: endre logikken annerledes, funker til en MVP per nå
   const [showResults, setShowResults] = useState<boolean>(false); // TODO: samme her
-
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-
-    console.log(`Input name: ${name}, value: ${value}`);
-
-    setInputValues({
-      ...inputValues,
-      [name]: Number(value),
-    });
-
-    console.log("Updated inputValues: ", inputValues);
-  };
+  const [showButton, setShowButton] = useState(true);
 
   const handleClick = () => {
     if (headline === "Legg til ny reise") {
       setShowTravelInput((prev) => !prev);
+      setShowButton(!showButton);
     } else if (headline === "Vis resultat") {
       setShowResults(true);
     }
@@ -51,16 +34,13 @@ export const ButtonAdd: React.FC<Props> = ({ headline }) => {
 
   return (
     <div>
-      {showTravelInput && (
-        <InputFields
-          inputValues={inputValues}
-          handleInputChange={handleInputChange}
-        />
+      {showTravelInput && <InputFields />}
+      {showButton && (
+        <Button variant="outlined" onClick={handleClick}>
+          {headline}
+        </Button>
       )}
-      <Button variant="outlined" onClick={handleClick}>
-        {headline}
-      </Button>
-      {showResults && <Results inputValues={inputValues} />}{" "}
+      {/* {showResults && <Results inputValues={inputValues} />}{" "} */}
     </div>
   );
 };

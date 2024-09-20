@@ -1,26 +1,45 @@
-import React, { ChangeEvent } from "react";
-import { TextField } from "@mui/material";
+import React, { ChangeEvent, useState } from "react";
+import { Button, TextField } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
+import { ButtonAdd } from "./button_add";
+import { Results } from "./results";
 
-interface InputFieldsProps {
-  inputValues: {
-    km: number;
-    antall: number;
-    utgifterBomFergeEtc: number;
-    [key: string]: number;
-  };
-  handleInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
+interface InputValues {
+  km: number;
+  antall: number;
+  utgifterBomFergeEtc: number;
+  [key: string]: number;
 }
 
-export const InputFields: React.FC<InputFieldsProps> = ({
-  inputValues,
-  handleInputChange,
-}) => {
-  // TODO: sett valuesene her, og så ha en onChange på hele formen, i stedet for å ha en onChange på hvert input
+export const InputFields = () => {
   // TODO: sette limits på input feltene som oppgaven sier i A) + placeholders
+  const [inputValues, setInputValues] = useState<InputValues>({
+    km: 0,
+    antall: 0,
+    utgifterBomFergeEtc: 0,
+  });
+
+  const [showResults, setShowResults] = useState<boolean>(false);
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    console.log(`Input name: ${name}, value: ${value}`);
+    setInputValues({
+      ...inputValues,
+      [name]: Number(value),
+    });
+    console.log("Updated inputValues: ", inputValues);
+  };
+
+  const handleClick = () => {
+    console.log("sjekk");
+    setShowResults(true);
+    return <Results inputValues={inputValues} />;
+  };
+
   return (
     <>
       <p className="text-information"> Fyll inn:</p>
@@ -84,6 +103,11 @@ export const InputFields: React.FC<InputFieldsProps> = ({
           />
         </div>
       </div>
+      <ButtonAdd headline="Legg til ny reise" />
+      <Button variant="outlined" onClick={handleClick}>
+        Vis resultater
+      </Button>
+      {showResults && <Results inputValues={inputValues} />}{" "}
     </>
   );
 };
