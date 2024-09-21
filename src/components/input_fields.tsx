@@ -4,19 +4,9 @@ import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
-import { ButtonAdd } from "./button_add";
 import { Results } from "./results";
-
-interface TravelEntry {
-  km: number | null;
-  antall: number | null;
-}
-
-interface InputValues {
-  arbeidsreiser: TravelEntry[];
-  besoeksreiser: TravelEntry[];
-  utgifterBomFergeEtc: number | null;
-}
+import { InputValues, TravelEntry } from "../interfaces";
+import { calculateDeduction, isValidInput } from "../data/fetchData";
 
 export const InputFields = () => {
   // TODO: sette limits på input feltene som oppgaven sier i A) + placeholders
@@ -35,6 +25,7 @@ export const InputFields = () => {
   const [travelType, setTravelType] = useState<string>("work");
   //const [showResults, setShowResults] = useState<boolean>(false);
   const [showResultButton, setShowResultButton] = useState(true);
+  const [deductionResult, setDeductionResult] = useState<number | null>(null);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -54,33 +45,38 @@ export const InputFields = () => {
     });
   };
 
-  const handleClick = () => {
-    // Add the current travel entry to the appropriate category and update state
-    setInputValues((prevValues) => {
-      const updatedValues = {
-        ...prevValues,
-        utgifterBomFergeEtc: prevValues.utgifterBomFergeEtc, // Preserve the current utgifter
-      };
-
-      if (travelType === "work") {
-        updatedValues.arbeidsreiser = [
-          ...prevValues.arbeidsreiser,
-          currentEntry,
-        ];
-      } else if (travelType === "visit") {
-        updatedValues.besoeksreiser = [
-          ...prevValues.besoeksreiser,
-          currentEntry,
-        ];
+  const getResults = async (updatedValues: InputValues) => {
+    if (isValidInput(inputValues)) {
+      try {
+        const result = await calculateDeduction(updatedValues); // Call API
+        setDeductionResult(result.reisefradrag); // Set result
+      } catch (error) {
+        console.error("Failed to fetch deduction:", error);
       }
+    } else {
+      console.error("Invalid input values!");
+    }
+  };
 
-      console.log("Updated input values:", updatedValues);
+  const handleClick = async () => {
+    const updatedValues = {
+      ...inputValues,
+      arbeidsreiser:
+        travelType === "work"
+          ? [...inputValues.arbeidsreiser, currentEntry]
+          : inputValues.arbeidsreiser,
+      besoeksreiser:
+        travelType === "visit"
+          ? [...inputValues.besoeksreiser, currentEntry]
+          : inputValues.besoeksreiser,
+    };
 
-      return updatedValues;
-    });
-
+    setInputValues(updatedValues); // Update state
     setShowResults(true);
     setShowResultButton(!showResultButton);
+
+    // Now that inputValues is updated, fetch the deduction result
+    await getResults(updatedValues);
   };
 
   return (
@@ -153,7 +149,7 @@ export const InputFields = () => {
           Vis resultater
         </Button>
       )}
-      {showResults && <Results />}{" "}
+      {showResults && <Results calculationResult={deductionResult} />}{" "}
     </>
   );
 };

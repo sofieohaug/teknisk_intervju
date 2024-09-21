@@ -3,13 +3,6 @@ import { useState, ChangeEvent } from "react";
 import { InputFields } from "./input_fields";
 import { Results } from "./results";
 
-interface InputValues {
-  km: number;
-  antall: number;
-  utgifterBomFergeEtc: number;
-  [key: string]: number; //Kan være jeg kun trenger denne
-}
-
 interface Props {
   headline?:
     | "Legg til ny reise"
