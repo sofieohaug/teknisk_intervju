@@ -8,14 +8,14 @@ import { ButtonAdd } from "./button_add";
 import { Results } from "./results";
 
 interface TravelEntry {
-  km: number;
-  antall: number;
+  km: number | null;
+  antall: number | null;
 }
 
 interface InputValues {
   arbeidsreiser: TravelEntry[];
   besoeksreiser: TravelEntry[];
-  utgifterBomFergeEtc: number;
+  utgifterBomFergeEtc: number | null;
 }
 
 export const InputFields = () => {
@@ -23,18 +23,18 @@ export const InputFields = () => {
   const [inputValues, setInputValues] = useState<InputValues>({
     arbeidsreiser: [],
     besoeksreiser: [],
-    utgifterBomFergeEtc: 0,
+    utgifterBomFergeEtc: null,
   });
 
   const [currentEntry, setCurrentEntry] = useState<TravelEntry>({
-    km: 0,
-    antall: 0,
+    km: null,
+    antall: null,
   });
 
   const [showResults, setShowResults] = useState<boolean>(false);
   const [travelType, setTravelType] = useState<string>("work");
   //const [showResults, setShowResults] = useState<boolean>(false);
-  const [showButton, setShowButton] = useState(true);
+  const [showResultButton, setShowResultButton] = useState(true);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -80,7 +80,7 @@ export const InputFields = () => {
     });
 
     setShowResults(true);
-    setShowButton(!showButton);
+    setShowResultButton(!showResultButton);
   };
 
   return (
@@ -148,7 +148,7 @@ export const InputFields = () => {
         </div>
       </div>
       {/* <ButtonAdd headline="Legg til ny reise" /> */}
-      {showButton && (
+      {showResultButton && (
         <Button variant="outlined" onClick={handleClick}>
           Vis resultater
         </Button>
