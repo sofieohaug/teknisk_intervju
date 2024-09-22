@@ -1,8 +1,9 @@
 import { Button } from "@mui/material";
 import "../css/components.css";
-import { ResultsProps } from "../interfaces";
+import { ResultsProps } from "../interfaces/interface";
 
-export const Results: React.FC<ResultsProps> = ({
+//Resultat med knapper for redigering
+export const ResultsOutput: React.FC<ResultsProps> = ({
   calculationResult,
   handleReset,
   handleUpdate,
@@ -15,10 +16,10 @@ export const Results: React.FC<ResultsProps> = ({
           : "Data ikke tilgjengelig"}
       </p>
       <div className="buttons-results">
-        <Button variant="outlined" onClick={handleUpdate}>
+        <Button variant="contained" onClick={handleUpdate}>
           Oppdater verdier
         </Button>
-        <Button variant="contained" onClick={handleReset}>
+        <Button variant="contained" color="error" onClick={handleReset}>
           Nullstill skjema
         </Button>
       </div>

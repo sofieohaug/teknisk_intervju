@@ -1,33 +1,34 @@
 import React, { ChangeEvent, useState } from "react";
-import { Button, TextField } from "@mui/material";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import RadioGroup from "@mui/material/RadioGroup";
-import Radio from "@mui/material/Radio";
-import { Results } from "./results";
-import { InputValues, TravelEntry } from "../interfaces";
+import { Button } from "@mui/material";
+import { ResultsOutput } from "./results";
+import {
+  InputValues,
+  TravelEntry as TravelEntryType,
+} from "../interfaces/interface";
 import { calculateDeduction, isValidInput } from "../data/fetchData";
 import "../css/components.css";
+import { TravelEntryInputs } from "./travel_entry_inputs";
+import { AdditionalTripButtons } from "./additional_trips_buttons";
+import { TotalExpensesInput } from "./total_expenses_input";
+import { InformationText } from "./information_text";
 
-export const InputFields = () => {
-  // TODO: sette limits på input feltene som oppgave A) sier
-  const initialInputValues: InputValues = {
-    arbeidsreiser: [],
-    besoeksreiser: [],
-    utgifterBomFergeEtc: null,
-  };
+const initialInputValues: InputValues = {
+  arbeidsreiser: [],
+  besoeksreiser: [],
+  utgifterBomFergeEtc: null,
+};
 
-  const initialCurrentEntry: TravelEntry = {
-    km: null,
-    antall: null,
-  };
+const initialCurrentEntry: TravelEntryType = {
+  km: null,
+  antall: null,
+};
 
+export const CalculationForm = () => {
   const [inputValues, setInputValues] =
     useState<InputValues>(initialInputValues);
-  const [currentEntries, setCurrentEntries] = useState<TravelEntry[]>([
+  const [currentEntries, setCurrentEntries] = useState<TravelEntryType[]>([
     initialCurrentEntry,
   ]);
-
   const [showResults, setShowResults] = useState<boolean>(false);
   const [travelTypes, setTravelTypes] = useState<string[]>(["work"]);
   const [showResultButton, setShowResultButton] = useState(true);
@@ -50,6 +51,7 @@ export const InputFields = () => {
       updatedTravelTypes[index] = event.target.value;
       setTravelTypes(updatedTravelTypes);
     };
+
   const handleExpensesChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValues({
       ...inputValues,
@@ -58,12 +60,10 @@ export const InputFields = () => {
     });
   };
 
-  const handleRemoveTrip = (index: number) => {
-    if (currentEntries.length > 1 && index > 0) {
-      const updatedEntries = currentEntries.filter((_, i) => i !== index);
-      const updatedTravelTypes = travelTypes.filter((_, i) => i !== index);
-      setCurrentEntries(updatedEntries);
-      setTravelTypes(updatedTravelTypes);
+  const handleRemoveTrip = () => {
+    if (currentEntries.length > 1) {
+      setCurrentEntries(currentEntries.slice(0, -1));
+      setTravelTypes(travelTypes.slice(0, -1));
     }
   };
 
@@ -123,83 +123,29 @@ export const InputFields = () => {
     setShowResultButton(true);
     setTravelTypes(["work"]);
   };
+
   return (
     <>
+      <InformationText />
       {currentEntries.map((entry, index) => (
-        <div key={index} className="travel-entry">
-          <p className="text-information">Fyll inn:</p>
-          <div className="input-container">
-            <FormControl>
-              <RadioGroup
-                aria-labelledby={`travel-type-radio-group-label-${index}`}
-                value={travelTypes[index]}
-                name={`travel-type-radio-group-${index}`}
-                onChange={handleTravelTypeChange(index)}
-                className="radio-group"
-              >
-                <FormControlLabel
-                  value="work"
-                  control={<Radio />}
-                  label="Arbeidsreise"
-                />
-                <FormControlLabel
-                  value="visit"
-                  control={<Radio />}
-                  label="Besøksreise"
-                />
-              </RadioGroup>
-            </FormControl>
-            <div className="input-fields">
-              <TextField
-                name="km"
-                label="Antall km"
-                variant="outlined"
-                type="number"
-                value={entry.km ?? ""}
-                onChange={handleEntryChange(index)}
-              />
-              <TextField
-                name="antall"
-                label="Antall forekomster"
-                variant="outlined"
-                type="number"
-                value={entry.antall ?? ""}
-                onChange={handleEntryChange(index)}
-              />
-            </div>
-          </div>
-        </div>
-      ))}
-      <div className="trip-buttons-container">
-        <Button
-          variant="outlined"
-          onClick={handleAddTrip}
-          className="add-trip-button"
-        >
-          Legg til flere
-        </Button>
-        {currentEntries.length > 1 && (
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={() => handleRemoveTrip(currentEntries.length - 1)}
-            className="remove-trip-button"
-          >
-            Fjern reise
-          </Button>
-        )}
-      </div>
-      <div className="total-expenses-container">
-        <TextField
-          name="utgifterBomFergeEtc"
-          label="Totale utgifter i kr"
-          variant="outlined"
-          type="number"
-          value={inputValues.utgifterBomFergeEtc ?? ""}
-          onChange={handleExpensesChange}
-          className="total-expenses-input"
+        <TravelEntryInputs
+          key={index}
+          entry={entry}
+          index={index}
+          travelType={travelTypes[index]}
+          onEntryChange={handleEntryChange}
+          onTravelTypeChange={handleTravelTypeChange}
         />
-      </div>
+      ))}
+      <AdditionalTripButtons
+        onAddTrip={handleAddTrip}
+        onRemoveTrip={handleRemoveTrip}
+        showRemoveButton={currentEntries.length > 1}
+      />
+      <TotalExpensesInput
+        value={inputValues.utgifterBomFergeEtc}
+        onChange={handleExpensesChange}
+      />
       <div className="button-input">
         {showResultButton && (
           <Button variant="contained" onClick={handleResults}>
@@ -208,7 +154,7 @@ export const InputFields = () => {
         )}
       </div>
       {showResults && (
-        <Results
+        <ResultsOutput
           calculationResult={deductionResult}
           handleReset={handleReset}
           handleUpdate={handleUpdate}

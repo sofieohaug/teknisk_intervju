@@ -1,4 +1,4 @@
-export const TravelInput = () => {
+export const InformationText = () => {
   return (
     <div>
       <h2>Velkommen til reisefradragstjenesten!</h2>

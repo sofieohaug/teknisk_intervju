@@ -8,9 +8,9 @@ export const Header = () => {
         <img src={logo} alt="My Logo" className="logo-img" />
       </div>
       <nav className="nav-links">
-        <a href="#1">Våre tjenester</a>
-        <a href="#2">Hjelp</a>
-        <a href="#3">Kontakt</a>
+        <a href="">Våre tjenester</a>
+        <a href="">Hjelp</a>
+        <a href="">Kontakt</a>
       </nav>
     </header>
   );

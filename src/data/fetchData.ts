@@ -1,10 +1,10 @@
-import { InputValues, TravelEntry } from "../interfaces"
+import { InputValues, TravelEntry } from "../interfaces/interface"
 
-
+//API-kallet
 export async function calculateDeduction(data: InputValues): Promise<any> {
     console.log('calculateDeduction called with data:', JSON.stringify(data, null, 2));
     try {
-      const cleanData: InputValues = {
+      const getData: InputValues = {
         arbeidsreiser: data.arbeidsreiser.filter(entry => entry.km !== null && entry.antall !== null),
         besoeksreiser: data.besoeksreiser.filter(entry => entry.km !== null && entry.antall !== null),
         utgifterBomFergeEtc: data.utgifterBomFergeEtc
@@ -15,7 +15,7 @@ export async function calculateDeduction(data: InputValues): Promise<any> {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(cleanData),
+        body: JSON.stringify(getData),
       });
   
       console.log('Status:', response.status);
