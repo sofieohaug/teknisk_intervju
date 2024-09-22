@@ -34,6 +34,13 @@ export const CalculationForm = () => {
   const [showResultButton, setShowResultButton] = useState(true);
   const [deductionResult, setDeductionResult] = useState<number | null>(null);
 
+  const handleTravelTypeChange =
+    (index: number) => (event: ChangeEvent<HTMLInputElement>) => {
+      const updatedTravelTypes = [...travelTypes];
+      updatedTravelTypes[index] = event.target.value;
+      setTravelTypes(updatedTravelTypes);
+    };
+
   const handleEntryChange =
     (index: number) => (event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
@@ -45,19 +52,9 @@ export const CalculationForm = () => {
       setCurrentEntries(updatedEntries);
     };
 
-  const handleTravelTypeChange =
-    (index: number) => (event: ChangeEvent<HTMLInputElement>) => {
-      const updatedTravelTypes = [...travelTypes];
-      updatedTravelTypes[index] = event.target.value;
-      setTravelTypes(updatedTravelTypes);
-    };
-
-  const handleExpensesChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setInputValues({
-      ...inputValues,
-      utgifterBomFergeEtc:
-        event.target.value === "" ? null : Number(event.target.value),
-    });
+  const handleAddTrip = () => {
+    setCurrentEntries([...currentEntries, initialCurrentEntry]);
+    setTravelTypes([...travelTypes, "work"]);
   };
 
   const handleRemoveTrip = () => {
@@ -65,6 +62,14 @@ export const CalculationForm = () => {
       setCurrentEntries(currentEntries.slice(0, -1));
       setTravelTypes(travelTypes.slice(0, -1));
     }
+  };
+
+  const handleExpensesChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputValues({
+      ...inputValues,
+      utgifterBomFergeEtc:
+        event.target.value === "" ? null : Number(event.target.value),
+    });
   };
 
   const getResults = async (updatedValues: InputValues) => {
@@ -78,11 +83,6 @@ export const CalculationForm = () => {
     } else {
       console.error("Invalid input values!");
     }
-  };
-
-  const handleAddTrip = () => {
-    setCurrentEntries([...currentEntries, initialCurrentEntry]);
-    setTravelTypes([...travelTypes, "work"]);
   };
 
   const handleResults = async () => {
