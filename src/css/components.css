@@ -1,5 +1,5 @@
 .text-information {
-  font-size: 12px;
+  font-size: 20px;
 }
 
 /* InputFields.css */
@@ -20,4 +20,30 @@
   flex-direction: column;
   gap: 16px;
   justify-content: center;
+}
+
+.input-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.buttons-results {
+  display: flex;
+  gap: 10px;
+}
+
+.button-input {
+  margin-top: 15px;
 }

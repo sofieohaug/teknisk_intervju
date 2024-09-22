@@ -7,49 +7,56 @@ import Radio from "@mui/material/Radio";
 import { Results } from "./results";
 import { InputValues, TravelEntry } from "../interfaces";
 import { calculateDeduction, isValidInput } from "../data/fetchData";
+import "../css/components.css";
 
 export const InputFields = () => {
   // TODO: sette limits på input feltene som oppgaven sier i A) + placeholders
-  const [inputValues, setInputValues] = useState<InputValues>({
+  // TODO: Vurdere å gjøre om til å bare hente rett fra interfaces, må gjøre det om til en funksjon da
+  const initialInputValues: InputValues = {
     arbeidsreiser: [],
     besoeksreiser: [],
     utgifterBomFergeEtc: null,
-  });
+  };
 
-  const [currentEntry, setCurrentEntry] = useState<TravelEntry>({
+  const initialCurrentEntry: TravelEntry = {
     km: null,
     antall: null,
-  });
+  };
+
+  const [inputValues, setInputValues] =
+    useState<InputValues>(initialInputValues);
+  const [currentEntry, setCurrentEntry] =
+    useState<TravelEntry>(initialCurrentEntry);
 
   const [showResults, setShowResults] = useState<boolean>(false);
   const [travelType, setTravelType] = useState<string>("work");
-  //const [showResults, setShowResults] = useState<boolean>(false);
   const [showResultButton, setShowResultButton] = useState(true);
   const [deductionResult, setDeductionResult] = useState<number | null>(null);
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleEntryChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setCurrentEntry({
       ...currentEntry,
-      [name]: Number(value),
+      [name]: value === "" ? null : Number(value),
     });
   };
 
   const handleTravelTypeChange = (event: ChangeEvent<HTMLInputElement>) => {
     setTravelType(event.target.value);
   };
-  const handleUtgifterChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleExpensesChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValues({
       ...inputValues,
-      utgifterBomFergeEtc: Number(event.target.value),
+      utgifterBomFergeEtc:
+        event.target.value === "" ? null : Number(event.target.value),
     });
   };
 
   const getResults = async (updatedValues: InputValues) => {
     if (isValidInput(inputValues)) {
       try {
-        const result = await calculateDeduction(updatedValues); // Call API
-        setDeductionResult(result.reisefradrag); // Set result
+        const result = await calculateDeduction(updatedValues);
+        setDeductionResult(result.reisefradrag);
       } catch (error) {
         console.error("Failed to fetch deduction:", error);
       }
@@ -58,7 +65,7 @@ export const InputFields = () => {
     }
   };
 
-  const handleClick = async () => {
+  const handleResults = async () => {
     const updatedValues = {
       ...inputValues,
       arbeidsreiser:
@@ -71,31 +78,49 @@ export const InputFields = () => {
           : inputValues.besoeksreiser,
     };
 
-    setInputValues(updatedValues); // Update state
+    setInputValues(updatedValues);
     setShowResults(true);
-    setShowResultButton(!showResultButton);
-
-    // Now that inputValues is updated, fetch the deduction result
+    setShowResultButton(false);
     await getResults(updatedValues);
   };
 
+  const handleUpdate = async () => {
+    const updatedValues = {
+      ...inputValues,
+      arbeidsreiser:
+        travelType === "work"
+          ? [...inputValues.arbeidsreiser.slice(0, -1), currentEntry]
+          : inputValues.arbeidsreiser,
+      besoeksreiser:
+        travelType === "visit"
+          ? [...inputValues.besoeksreiser.slice(0, -1), currentEntry]
+          : inputValues.besoeksreiser,
+    };
+
+    setInputValues(updatedValues);
+    await getResults(updatedValues);
+  };
+
+  const handleReset = () => {
+    setCurrentEntry(initialCurrentEntry);
+    setInputValues(initialInputValues);
+    setShowResults(false);
+    setDeductionResult(null);
+    setShowResultButton(true);
+    setTravelType("work");
+    console.log("reset inputValues", inputValues);
+  };
   return (
     <>
       <p className="text-information"> Fyll inn:</p>
-      {
-        // TODO: endre til noe mer semantisk riktig ser ut som det skal være en form med inuts og labels
-      }
-      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-        {
-          // TODO: fjerne inline styling og lage egen css fil som i results.tsx
-        }
+      <div className="input-container">
         <FormControl>
           <RadioGroup
-            aria-labelledby="demo-radio-buttons-group-label"
-            defaultValue="work"
-            name="radio-buttons-group"
+            aria-labelledby="travel-type-radio-group-label"
+            value={travelType}
+            name="travel-type-radio-group"
             onChange={handleTravelTypeChange}
-            style={{ display: "flex", flexDirection: "column" }}
+            className="radio-group"
           >
             <FormControlLabel
               value="work"
@@ -109,47 +134,47 @@ export const InputFields = () => {
             />
           </RadioGroup>
         </FormControl>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "6px",
-            justifyContent: "center",
-          }}
-        >
+        <div className="input-fields">
           <TextField
             name="km"
             label="Antall km"
             variant="outlined"
             type="number"
-            value={currentEntry.km}
-            onChange={handleInputChange}
+            value={currentEntry.km ?? ""}
+            onChange={handleEntryChange}
           />
           <TextField
             name="antall"
             label="Antall forekomster"
             variant="outlined"
             type="number"
-            value={currentEntry.antall}
-            onChange={handleInputChange}
+            value={currentEntry.antall ?? ""}
+            onChange={handleEntryChange}
           />
           <TextField
             name="utgifterBomFergeEtc"
             label="Totale utgifter"
             variant="outlined"
             type="number"
-            value={inputValues.utgifterBomFergeEtc}
-            onChange={handleUtgifterChange}
+            value={inputValues.utgifterBomFergeEtc ?? ""}
+            onChange={handleExpensesChange}
           />
         </div>
       </div>
-      {/* <ButtonAdd headline="Legg til ny reise" /> */}
-      {showResultButton && (
-        <Button variant="outlined" onClick={handleClick}>
-          Vis resultater
-        </Button>
-      )}
-      {showResults && <Results calculationResult={deductionResult} />}{" "}
+      <div className="button-input">
+        {showResultButton && (
+          <Button variant="contained" onClick={handleResults}>
+            Vis resultater
+          </Button>
+        )}
+      </div>
+      {showResults && (
+        <Results
+          calculationResult={deductionResult}
+          handleReset={handleReset}
+          handleUpdate={handleUpdate}
+        />
+      )}{" "}
     </>
   );
 };

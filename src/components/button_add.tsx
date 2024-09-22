@@ -2,16 +2,9 @@ import { Button } from "@mui/material";
 import { useState, ChangeEvent } from "react";
 import { InputFields } from "./input_fields";
 import { Results } from "./results";
+import { ButtonProps } from "../interfaces";
 
-interface Props {
-  headline?:
-    | "Legg til ny reise"
-    | "Vis resultat"
-    | "Korriger verdier"
-    | "Nullstill skjema"; // S: Endret fra string til union av ulike strings (sånn at den er type safe når man lager komponenten)
-}
-
-export const ButtonAdd: React.FC<Props> = ({ headline }) => {
+export const ButtonAdd: React.FC<ButtonProps> = ({ headline }) => {
   const [showTravelInput, setShowTravelInput] = useState<boolean>(false); // TODO: endre logikken annerledes, funker til en MVP per nå
   const [showResults, setShowResults] = useState<boolean>(false); // TODO: samme her
   const [showButton, setShowButton] = useState(true);
@@ -29,11 +22,10 @@ export const ButtonAdd: React.FC<Props> = ({ headline }) => {
     <div>
       {showTravelInput && <InputFields />}
       {showButton && (
-        <Button variant="outlined" onClick={handleClick}>
+        <Button variant="contained" onClick={handleClick}>
           {headline}
         </Button>
       )}
-      {/* {showResults && <Results inputValues={inputValues} />}{" "} */}
     </div>
   );
 };

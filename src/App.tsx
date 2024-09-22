@@ -1,7 +1,7 @@
 // App.tsx
 import React from "react";
 import "./css/App.css";
-import { TravelInput } from "./components/travel_input";
+import { TravelInput } from "./components/user_information";
 import { Header } from "./components/header";
 import { ButtonAdd } from "./components/button_add";
 
@@ -12,7 +12,6 @@ function App() {
         <Header />
         <TravelInput />
         <ButtonAdd headline="Legg til ny reise" />
-        {/* <ButtonAdd headline="Vis resultat" /> */}
       </header>
     </div>
   );

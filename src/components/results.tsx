@@ -1,17 +1,27 @@
-import "../css/header.css";
+import { Button } from "@mui/material";
+import "../css/components.css";
 import { ResultsProps } from "../interfaces";
-import { ButtonAdd } from "./button_add";
 
-export const Results: React.FC<ResultsProps> = ({ calculationResult }) => {
+export const Results: React.FC<ResultsProps> = ({
+  calculationResult,
+  handleReset,
+  handleUpdate,
+}) => {
   return (
-    // TODO: kanskje endre fra en div til en section eller noe mer semantisk
-    <div>
+    <section className="results-container">
       <p className="text-information">
-        Reisefradrag blir følgende:{" "}
-        {calculationResult !== null ? calculationResult : "Ingen data"}
+        {calculationResult !== null
+          ? `Reisefradrag blir følgende: ${calculationResult} kr`
+          : "Data ikke tilgjengelig"}
       </p>
-      <ButtonAdd headline={"Korriger verdier"} />
-      <ButtonAdd headline={"Nullstill skjema"} />
-    </div>
+      <div className="buttons-results">
+        <Button variant="outlined" onClick={handleUpdate}>
+          Oppdater verdier
+        </Button>
+        <Button variant="contained" onClick={handleReset}>
+          Nullstill skjema
+        </Button>
+      </div>
+    </section>
   );
 };
