@@ -41,8 +41,39 @@
 .buttons-results {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
 .button-input {
   margin-top: 15px;
+}
+
+.trip-buttons-container {
+  margin-top: 8px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.add-trip-button,
+.remove-trip-button {
+  align-self: flex-start;
+}
+
+.total-expenses-container {
+  margin-top: 8px;
+}
+
+.total-expenses-input {
+  width: 100%;
+}
+
+.travel-entry {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+}
+
+.travel-entry:last-child {
+  border-bottom: none;
 }

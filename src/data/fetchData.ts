@@ -33,7 +33,6 @@ export async function calculateDeduction(data: InputValues): Promise<any> {
     }
   }
   
-  //Fjerner null-data
   export function isValidInput(data: InputValues): boolean {
     console.log('Validating input:', JSON.stringify(data, null, 2));
     const isValidEntry = (entry: TravelEntry) => entry.km !== null && entry.antall !== null;

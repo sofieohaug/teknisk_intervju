@@ -10,8 +10,7 @@ import { calculateDeduction, isValidInput } from "../data/fetchData";
 import "../css/components.css";
 
 export const InputFields = () => {
-  // TODO: sette limits på input feltene som oppgaven sier i A) + placeholders
-  // TODO: Vurdere å gjøre om til å bare hente rett fra interfaces, må gjøre det om til en funksjon da
+  // TODO: sette limits på input feltene som oppgave A) sier
   const initialInputValues: InputValues = {
     arbeidsreiser: [],
     besoeksreiser: [],
@@ -25,25 +24,32 @@ export const InputFields = () => {
 
   const [inputValues, setInputValues] =
     useState<InputValues>(initialInputValues);
-  const [currentEntry, setCurrentEntry] =
-    useState<TravelEntry>(initialCurrentEntry);
+  const [currentEntries, setCurrentEntries] = useState<TravelEntry[]>([
+    initialCurrentEntry,
+  ]);
 
   const [showResults, setShowResults] = useState<boolean>(false);
-  const [travelType, setTravelType] = useState<string>("work");
+  const [travelTypes, setTravelTypes] = useState<string[]>(["work"]);
   const [showResultButton, setShowResultButton] = useState(true);
   const [deductionResult, setDeductionResult] = useState<number | null>(null);
 
-  const handleEntryChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setCurrentEntry({
-      ...currentEntry,
-      [name]: value === "" ? null : Number(value),
-    });
-  };
+  const handleEntryChange =
+    (index: number) => (event: ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target;
+      const updatedEntries = [...currentEntries];
+      updatedEntries[index] = {
+        ...updatedEntries[index],
+        [name]: value === "" ? null : Number(value),
+      };
+      setCurrentEntries(updatedEntries);
+    };
 
-  const handleTravelTypeChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setTravelType(event.target.value);
-  };
+  const handleTravelTypeChange =
+    (index: number) => (event: ChangeEvent<HTMLInputElement>) => {
+      const updatedTravelTypes = [...travelTypes];
+      updatedTravelTypes[index] = event.target.value;
+      setTravelTypes(updatedTravelTypes);
+    };
   const handleExpensesChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValues({
       ...inputValues,
@@ -52,8 +58,17 @@ export const InputFields = () => {
     });
   };
 
+  const handleRemoveTrip = (index: number) => {
+    if (currentEntries.length > 1 && index > 0) {
+      const updatedEntries = currentEntries.filter((_, i) => i !== index);
+      const updatedTravelTypes = travelTypes.filter((_, i) => i !== index);
+      setCurrentEntries(updatedEntries);
+      setTravelTypes(updatedTravelTypes);
+    }
+  };
+
   const getResults = async (updatedValues: InputValues) => {
-    if (isValidInput(inputValues)) {
+    if (isValidInput(updatedValues)) {
       try {
         const result = await calculateDeduction(updatedValues);
         setDeductionResult(result.reisefradrag);
@@ -65,19 +80,21 @@ export const InputFields = () => {
     }
   };
 
+  const handleAddTrip = () => {
+    setCurrentEntries([...currentEntries, initialCurrentEntry]);
+    setTravelTypes([...travelTypes, "work"]);
+  };
+
   const handleResults = async () => {
     const updatedValues = {
       ...inputValues,
-      arbeidsreiser:
-        travelType === "work"
-          ? [...inputValues.arbeidsreiser, currentEntry]
-          : inputValues.arbeidsreiser,
-      besoeksreiser:
-        travelType === "visit"
-          ? [...inputValues.besoeksreiser, currentEntry]
-          : inputValues.besoeksreiser,
+      arbeidsreiser: currentEntries.filter(
+        (_, index) => travelTypes[index] === "work"
+      ),
+      besoeksreiser: currentEntries.filter(
+        (_, index) => travelTypes[index] === "visit"
+      ),
     };
-
     setInputValues(updatedValues);
     setShowResults(true);
     setShowResultButton(false);
@@ -87,79 +104,101 @@ export const InputFields = () => {
   const handleUpdate = async () => {
     const updatedValues = {
       ...inputValues,
-      arbeidsreiser:
-        travelType === "work"
-          ? [...inputValues.arbeidsreiser.slice(0, -1), currentEntry]
-          : inputValues.arbeidsreiser,
-      besoeksreiser:
-        travelType === "visit"
-          ? [...inputValues.besoeksreiser.slice(0, -1), currentEntry]
-          : inputValues.besoeksreiser,
+      arbeidsreiser: currentEntries.filter(
+        (_, index) => travelTypes[index] === "work"
+      ),
+      besoeksreiser: currentEntries.filter(
+        (_, index) => travelTypes[index] === "visit"
+      ),
     };
-
     setInputValues(updatedValues);
     await getResults(updatedValues);
   };
 
   const handleReset = () => {
-    setCurrentEntry(initialCurrentEntry);
+    setCurrentEntries([initialCurrentEntry]);
     setInputValues(initialInputValues);
     setShowResults(false);
     setDeductionResult(null);
     setShowResultButton(true);
-    setTravelType("work");
-    console.log("reset inputValues", inputValues);
+    setTravelTypes(["work"]);
   };
   return (
     <>
-      <p className="text-information"> Fyll inn:</p>
-      <div className="input-container">
-        <FormControl>
-          <RadioGroup
-            aria-labelledby="travel-type-radio-group-label"
-            value={travelType}
-            name="travel-type-radio-group"
-            onChange={handleTravelTypeChange}
-            className="radio-group"
-          >
-            <FormControlLabel
-              value="work"
-              control={<Radio />}
-              label="Arbeidsreise"
-            />
-            <FormControlLabel
-              value="visit"
-              control={<Radio />}
-              label="Besøksreise"
-            />
-          </RadioGroup>
-        </FormControl>
-        <div className="input-fields">
-          <TextField
-            name="km"
-            label="Antall km"
-            variant="outlined"
-            type="number"
-            value={currentEntry.km ?? ""}
-            onChange={handleEntryChange}
-          />
-          <TextField
-            name="antall"
-            label="Antall forekomster"
-            variant="outlined"
-            type="number"
-            value={currentEntry.antall ?? ""}
-            onChange={handleEntryChange}
-          />
-          <TextField
-            name="utgifterBomFergeEtc"
-            label="Totale utgifter"
-            variant="outlined"
-            type="number"
-            value={inputValues.utgifterBomFergeEtc ?? ""}
-            onChange={handleExpensesChange}
-          />
+      {currentEntries.map((entry, index) => (
+        <div key={index} className="travel-entry">
+          <p className="text-information">Fyll inn:</p>
+          <div className="input-container">
+            <FormControl>
+              <RadioGroup
+                aria-labelledby={`travel-type-radio-group-label-${index}`}
+                value={travelTypes[index]}
+                name={`travel-type-radio-group-${index}`}
+                onChange={handleTravelTypeChange(index)}
+                className="radio-group"
+              >
+                <FormControlLabel
+                  value="work"
+                  control={<Radio />}
+                  label="Arbeidsreise"
+                />
+                <FormControlLabel
+                  value="visit"
+                  control={<Radio />}
+                  label="Besøksreise"
+                />
+              </RadioGroup>
+            </FormControl>
+            <div className="input-fields">
+              <TextField
+                name="km"
+                label="Antall km"
+                variant="outlined"
+                type="number"
+                value={entry.km ?? ""}
+                onChange={handleEntryChange(index)}
+              />
+              <TextField
+                name="antall"
+                label="Antall forekomster"
+                variant="outlined"
+                type="number"
+                value={entry.antall ?? ""}
+                onChange={handleEntryChange(index)}
+              />
+            </div>
+          </div>
         </div>
+      ))}
+      <div className="trip-buttons-container">
+        <Button
+          variant="outlined"
+          onClick={handleAddTrip}
+          className="add-trip-button"
+        >
+          Legg til flere
+        </Button>
+        {currentEntries.length > 1 && (
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => handleRemoveTrip(currentEntries.length - 1)}
+            className="remove-trip-button"
+          >
+            Fjern reise
+          </Button>
+        )}
+      </div>
+      <div className="total-expenses-container">
+        <TextField
+          name="utgifterBomFergeEtc"
+          label="Totale utgifter i kr"
+          variant="outlined"
+          type="number"
+          value={inputValues.utgifterBomFergeEtc ?? ""}
+          onChange={handleExpensesChange}
+          className="total-expenses-input"
+        />
       </div>
       <div className="button-input">
         {showResultButton && (
@@ -174,7 +213,7 @@ export const InputFields = () => {
           handleReset={handleReset}
           handleUpdate={handleUpdate}
         />
-      )}{" "}
+      )}
     </>
   );
 };
